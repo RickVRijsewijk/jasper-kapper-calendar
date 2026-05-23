@@ -9,10 +9,6 @@ class Afspraak extends Model
     protected $table = 'afspraken';
 
     protected $fillable = [
-        'name', 'email', 'service', 'slot', 'notes',
-    ];
-
-    protected $casts = [
-        'slot' => 'datetime',
+        'naam', 'email', 'behandeling', 'datum', 'tijd', 'opmerking',
     ];
 }

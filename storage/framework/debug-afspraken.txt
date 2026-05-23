@@ -1,0 +1,2 @@
+isEmpty=0 count=2 events=[{"title":"Knippen & Baard Combo","start":"2026-05-28T15:00","extendedProps":{"naam":"Pietje Puk","email":"test@example.com","opmerking":null}},{"title":"Knippen","start":"2026-05-28T16:00","extendedProps":{"naam":"Rick","email":"rick@example.com","opmerking":null}}]
+@else branch entered

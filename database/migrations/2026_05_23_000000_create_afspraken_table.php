@@ -9,11 +9,12 @@ return new class extends Migration {
     {
         Schema::create('afspraken', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('naam');
             $table->string('email');
-            $table->string('service');
-            $table->dateTime('slot');
-            $table->text('notes')->nullable();
+            $table->string('behandeling');
+            $table->date('datum');
+            $table->string('tijd');
+            $table->text('opmerking')->nullable();
             $table->timestamps();
         });
     }

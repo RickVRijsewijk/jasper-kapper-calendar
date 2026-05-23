@@ -10,28 +10,67 @@ class AfspraakController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:255',
+            'naam' => 'required|string|max:255',
             'email' => 'required|email|max:255',
-            'service' => 'required|string|max:100',
-            'slot' => 'required|string',
-            'notes' => 'nullable|string|max:1000',
+            'behandeling' => 'required|string|max:255',
+            'datum' => 'required|date',
+            'tijd' => 'required|string',
+            'opmerking' => 'nullable|string|max:1000',
         ]);
 
-        // slot comes in as "YYYY-MM-DD HH:MM" from the view
-        try {
-            $date = \Carbon\Carbon::createFromFormat('Y-m-d H:i', $data['slot']);
-        } catch (\Exception $e) {
-            return back()->withErrors(['slot' => 'Ongeldige datum/tijd geselecteerd.'])->withInput();
-        }
-
-        $afspraak = Afspraak::create([
-            'name' => $data['name'],
+        Afspraak::create([
+            'naam' => $data['naam'],
             'email' => $data['email'],
-            'service' => $data['service'],
-            'slot' => $date,
-            'notes' => $data['notes'] ?? null,
+            'behandeling' => $data['behandeling'],
+            'datum' => $data['datum'],
+            'tijd' => $data['tijd'],
+            'opmerking' => $data['opmerking'] ?? null,
         ]);
 
-        return redirect()->route('home')->with('status', 'Afspraak succesvol gepland voor ' . $date->format('d-m-Y H:i'));
+        return redirect()->route('afspraken.index', ['added' => 1]);
+    }
+
+    public function index()
+    {
+        $afspraken = Afspraak::orderBy('datum')
+            ->orderBy('tijd')
+            ->get();
+
+        $events = $afspraken->map(function($afspraak) {
+            return [
+                'title' => $afspraak->behandeling,
+                'start' => $afspraak->datum . 'T' . $afspraak->tijd,
+                'extendedProps' => [
+                    'naam' => $afspraak->naam,
+                    'email' => $afspraak->email,
+                    'opmerking' => $afspraak->opmerking
+                ]
+            ];
+        });
+
+        return view('afspraken.index', compact('afspraken', 'events'));
+    }
+
+    /**
+     * Live events endpoint for FullCalendar refetch.
+     * Called via AJAX — no layout wrapping, pure JSON.
+     */
+    public function events()
+    {
+        $afspraken = Afspraak::orderBy('datum')->orderBy('tijd')->get();
+
+        $events = $afspraken->map(function ($a) {
+            return [
+                'title'       => $a->behandeling,
+                'start'       => $a->datum . 'T' . $a->tijd,
+                'extendedProps' => [
+                    'naam'     => $a->naam,
+                    'email'    => $a->email,
+                    'opmerking'=> $a->opmerking,
+                ],
+            ];
+        });
+
+        return response()->json($events);
     }
 }

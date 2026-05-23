@@ -10,6 +10,8 @@ Route::post('afspraak', [AfspraakController::class, 'store'])->name('afspraak.st
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
+    Route::get('afspraken', [AfspraakController::class, 'index'])->name('afspraken.index');
+    Route::get('afspraken/events', [AfspraakController::class, 'events'])->name('afspraken.events');
 });
 
 require __DIR__.'/settings.php';
